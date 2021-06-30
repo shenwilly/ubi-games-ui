@@ -9,6 +9,7 @@ import chakraTheme from "./utils/chakraTheme"
 import Home from "./pages/Home"
 import Game from "./pages/Game"
 import { Web3Provider } from "./contexts/Web3"
+import { UbirollProvider } from "./contexts/Ubiroll"
 
 function App() {
   return (
@@ -49,7 +50,9 @@ const Providers: React.FC = ({ children }) => {
     <ThemeProvider theme={styledTheme}>
       <ChakraProvider theme={chakraTheme}>
         <Web3Provider>
-          {children}
+          <UbirollProvider>
+            {children}
+          </UbirollProvider>
         </Web3Provider>
       </ChakraProvider>
     </ThemeProvider>

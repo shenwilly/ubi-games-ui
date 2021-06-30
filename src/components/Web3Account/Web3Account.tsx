@@ -6,16 +6,18 @@ import { Web3Provider } from "@ethersproject/providers";
 import Web3AccountModal from "../Web3AccountModal";
 import { getERC20Balance, getNativeCurrency } from "../../utils/web3";
 import { getUBIAddress } from "../../utils/ubi";
+import useUbiroll from "../../hooks/useUbiroll";
 // import AccountModal from "../AccountModal";
 
 const Web3Account = () => {
     const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, accountAddress, chainId } = useWeb3()
+    const { ubiAddress } = useUbiroll()
     const [ ubiBalance, setUbiBalance ] = useState("-");
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     useEffect(() => {
         const getUBIBalance = async (provider: Web3Provider, chainId: number) => {
-            let balance = await getERC20Balance(accountAddress, getUBIAddress(chainId), provider);
+            let balance = await getERC20Balance(accountAddress, ubiAddress, provider);
             setUbiBalance(truncateBalance(formatEther(balance), 4));
         }
 
@@ -26,8 +28,7 @@ const Web3Account = () => {
         } else {
             setUbiBalance("-")
         }
-        console.log(injectedProvider, accountAddress, "??");
-    }, [injectedProvider, accountAddress, chainId])
+    }, [injectedProvider, accountAddress, ubiAddress])
     
     function truncateBalance(str: string, maxDecimalDigits: number) {
         if (str.includes('.')) {

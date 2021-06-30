@@ -4,7 +4,7 @@ export const NETWORK_CONFIGS: {[key: number]: NETWORK} = {
   1: {
     name: "MAINNET",
     nativeCurrency: "ETH",
-    ubi: "",
+    ubi: "0xdd1ad9a21ce722c151a836373babe42c868ce9a4",
   },
   137: {
     name: "MATIC",
