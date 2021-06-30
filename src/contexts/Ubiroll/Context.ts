@@ -4,10 +4,12 @@ import { ContextValues } from "./types";
 
 const Context = createContext<ContextValues>({
   ubiAddress: "",
+  ubiBalance: BigNumber.from(0),
   allowance: BigNumber.from(0),
   isApproving: false,
   isApproved: false,
-  onApprove: () => {}
+  onApprove: () => {},
+  createBet: async () => undefined
 });
 
 export default Context;

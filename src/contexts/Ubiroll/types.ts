@@ -2,8 +2,10 @@ import { BigNumber } from "ethers";
 
 export interface ContextValues {
     ubiAddress: string,
-    allowance: BigNumber
+    ubiBalance: BigNumber,
+    allowance: BigNumber,
     isApproving: boolean,
     isApproved: boolean,
-    onApprove: () => void
+    onApprove: () => void,
+    createBet: (amount: BigNumber, chance: number) => Promise<boolean | undefined>,
 }

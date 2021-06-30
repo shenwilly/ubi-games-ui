@@ -10,13 +10,11 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
   const [isApproved, setIsApproved] = useState(false);
   const { accountAddress, web3Account, injectedProvider } = useWeb3();
 
-  const fetchAllowance = useCallback(
-    async (userAddress: string, provider: Web3Provider) => {
-      if (!spenderAddress || !tokenAddress) {
+  const fetchAllowance = useCallback(async () => {
+      if (!spenderAddress || !tokenAddress || !accountAddress || !injectedProvider) {
         return;
       }
-      const allowance = await getAllowance(userAddress, spenderAddress, tokenAddress, provider);
-      console.log("allowance", allowance);
+      const allowance = await getAllowance(accountAddress, spenderAddress, tokenAddress, injectedProvider);
       setAllowance(BigNumber.from(allowance));
     },
     [setAllowance, spenderAddress, tokenAddress]
@@ -45,9 +43,7 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
   }, [allowance, setIsApproved]);
 
   useEffect(() => {
-    if (accountAddress && injectedProvider && spenderAddress && tokenAddress) {
-      fetchAllowance(accountAddress, injectedProvider);
-    }
+    fetchAllowance();
     let refreshInterval = setInterval(fetchAllowance, 10000);
     return () => clearInterval(refreshInterval);
   }, [accountAddress, injectedProvider, spenderAddress, tokenAddress]);

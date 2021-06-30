@@ -30,14 +30,14 @@ export const getERC20Balance = async (
     userAddress: string,
     tokenAddress: string, 
     provider: providers.Provider 
-): Promise<string> => {
+): Promise<BigNumber> => {
     const tokenContract = getERC20(tokenAddress, provider);
     try {
-        const balance: string = (await tokenContract.balanceOf(userAddress)).toString();
+        const balance = await tokenContract.balanceOf(userAddress);
         return balance;
     } catch (e) {
         console.log(e)
-        return "0";
+        return BigNumber.from(0);
     }
 };
   
