@@ -1,35 +1,19 @@
-import { useEffect, useState } from "react";
-import { formatEther } from "@ethersproject/units";
+import { useCallback } from "react";
 import { Button, Box, Flex, Text, useDisclosure } from "@chakra-ui/react"
 import useWeb3 from "../../hooks/useWeb3";
-import { Web3Provider } from "@ethersproject/providers";
 import Web3AccountModal from "../Web3AccountModal";
-import { getERC20Balance, getNativeCurrency } from "../../utils/web3";
-import { getUBIAddress } from "../../utils/ubi";
 import useUbiroll from "../../hooks/useUbiroll";
-// import AccountModal from "../AccountModal";
+import { formatUnits } from "ethers/lib/utils";
 
 const Web3Account = () => {
-    const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, accountAddress, chainId } = useWeb3()
-    const { ubiAddress } = useUbiroll()
-    const [ ubiBalance, setUbiBalance ] = useState("-");
+    const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, accountAddress } = useWeb3()
+    const { ubiBalance } = useUbiroll()
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    useEffect(() => {
-        const getUBIBalance = async (provider: Web3Provider, chainId: number) => {
-            let balance = await getERC20Balance(accountAddress, ubiAddress, provider);
-            setUbiBalance(truncateBalance(formatEther(balance), 4));
-        }
+    const ubiBalanceLabel = useCallback(() => {
+        return truncateBalance(formatUnits(ubiBalance, 18), 4);
+    }, [ubiBalance]);
 
-        if (injectedProvider && accountAddress && chainId) {
-            injectedProvider.on("block", (_) => {
-                getUBIBalance(injectedProvider, chainId);
-            })
-        } else {
-            setUbiBalance("-")
-        }
-    }, [injectedProvider, accountAddress, ubiAddress])
-    
     function truncateBalance(str: string, maxDecimalDigits: number) {
         if (str.includes('.')) {
             const parts = str.split('.');
@@ -48,7 +32,7 @@ const Web3Account = () => {
                 (<Box display="flex" p="2" borderRadius="8" onClick={onOpen} cursor="pointer">
                     <Box px="2">
                         <Text>
-                            {ubiBalance} UBI
+                            {ubiBalanceLabel()} UBI
                         </Text>
                     </Box>
                     <Box px="2">
