@@ -1,9 +1,12 @@
 import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid } from "@chakra-ui/react"
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { useState } from "react";
 import styled from "styled-components";
 import PageLayout from "../../components/PageLayout";
+import useUbiroll from "../../hooks/useUbiroll";
 
 const Game = () => {
+    const { createBet } = useUbiroll();
     const houseBalance = 10000;
     const maxPayout = houseBalance/100;
     const minBet = "5";
@@ -20,6 +23,12 @@ const Game = () => {
     const canCreateBet = () => {
       if (payout() > maxPayout) return false;
       return true;
+    }
+
+    const bet = async () => {
+      console.log(betAmount, betChance)
+      const result = await createBet(parseUnits(betAmount, 18), betChance);
+      console.log("BET:", result);
     }
   
     return (
@@ -58,7 +67,7 @@ const Game = () => {
 
               <Text mt={5}>Payout: {payout()} UBI</Text>
 
-              <Button mt={5} size="lg">
+              <Button mt={5} size="lg" onClick={bet}>
                 Place Bet
               </Button>
           </Flex>

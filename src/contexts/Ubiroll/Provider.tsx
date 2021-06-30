@@ -4,8 +4,11 @@ import useWeb3 from "../../hooks/useWeb3";
 import useApproval from "../../hooks/useApproval";
 import { Web3Provider } from "@ethersproject/providers";
 import { getUBIAddress } from "../../utils/ubi";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { getERC20Balance } from "../../utils/web3";
+import { UBIROLL_ADDRESS } from "../../constants/address";
+import { Ubiroll } from "../../types/eth";
+import UbirollAbi from "../../constants/abis/Ubiroll.json";
 
 const Provider: React.FC = ({ children }) => {
     const { accountAddress, chainId, web3Account, injectedProvider } = useWeb3();
@@ -37,18 +40,16 @@ const Provider: React.FC = ({ children }) => {
 
     const createBet = useCallback(
       async (amount: BigNumber, chance: number) => {
-        if (!amount || !chance) {
+        if (!amount || !chance || !injectedProvider || !web3Account) {
           return;
         }
         // const allowance = await getAllowance(userAddress, spenderAddress, tokenAddress, provider);
         // console.log("allowance", allowance);
         // setAllowance(BigNumber.from(allowance));
-        if (chainId) {
-          return true;
-
-        } else {
-          return false;
-        }
+        const ubiroll = (new ethers.Contract(UBIROLL_ADDRESS, UbirollAbi, injectedProvider)) as Ubiroll;
+        const tx =  await ubiroll.connect(web3Account).createBet(chance, amount);
+        const receipt = await tx.wait();
+        return receipt.status == 1;
       },
       [web3Account, injectedProvider]
     );
