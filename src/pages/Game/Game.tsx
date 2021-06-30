@@ -2,15 +2,15 @@ import { Button, Container, Flex, Input, SimpleGrid, Text } from "@chakra-ui/rea
 import styled from "styled-components";
 import { useCustomHook } from "../../hooks/useCustomHook";
 
-const Home = () => {
+const Game = () => {
     const { randomNumber, generateRandomNumber } = useCustomHook();
     return (
-        <>
-            <Flex dir="column">
-                
-            </Flex>
-        </>
+      <>
+        <Flex dir="column">
+            Game
+        </Flex>
+      </>
     );
 };
 
-export default Home;
+export default Game;

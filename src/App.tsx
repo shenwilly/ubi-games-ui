@@ -3,9 +3,12 @@ import { HashRouter as Router, Switch, Route } from "react-router-dom"
 import { Container, ChakraProvider } from "@chakra-ui/react"
 import styled, { ThemeProvider } from "styled-components"
 
-import Home from "./pages/Home"
 import Header from "./components/Header"
 import chakraTheme from "./utils/chakraTheme"
+
+import Home from "./pages/Home"
+import Game from "./pages/Game"
+import { Web3Provider } from "./contexts/Web3"
 
 function App() {
   return (
@@ -14,8 +17,8 @@ function App() {
         <Header />
         <BodyWrapper maxW="container.xl" display="flex" alignItems="start" justifyContent="center">
           <Switch>
-            <Route path="/home">
-              <Home />
+            <Route path="/game">
+              <Game />
             </Route>
             <Route path="/">
               <Home />
@@ -45,7 +48,9 @@ const Providers: React.FC = ({ children }) => {
   return (
     <ThemeProvider theme={styledTheme}>
       <ChakraProvider theme={chakraTheme}>
-        {children}
+        <Web3Provider>
+          {children}
+        </Web3Provider>
       </ChakraProvider>
     </ThemeProvider>
   );
