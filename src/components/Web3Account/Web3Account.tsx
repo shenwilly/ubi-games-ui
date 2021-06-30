@@ -4,28 +4,30 @@ import { Button, Box, Flex, Text, useDisclosure } from "@chakra-ui/react"
 import useWeb3 from "../../hooks/useWeb3";
 import { Web3Provider } from "@ethersproject/providers";
 import Web3AccountModal from "../Web3AccountModal";
-import { getNativeCurrency } from "../../utils/web3";
+import { getERC20Balance, getNativeCurrency } from "../../utils/web3";
+import { getUBIAddress } from "../../utils/ubi";
 // import AccountModal from "../AccountModal";
 
 const Web3Account = () => {
     const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, accountAddress, chainId } = useWeb3()
-    const [ balance, setBalance ] = useState("-");
+    const [ ubiBalance, setUbiBalance ] = useState("-");
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     useEffect(() => {
-        const getBalance = async (provider: Web3Provider) => {
-            let balance = await provider.getBalance(accountAddress);
-            setBalance(truncateBalance(formatEther(balance), 4));
+        const getUBIBalance = async (provider: Web3Provider, chainId: number) => {
+            let balance = await getERC20Balance(accountAddress, getUBIAddress(chainId), provider);
+            setUbiBalance(truncateBalance(formatEther(balance), 4));
         }
 
-        if (injectedProvider && accountAddress) {
+        if (injectedProvider && accountAddress && chainId) {
             injectedProvider.on("block", (_) => {
-                getBalance(injectedProvider);
+                getUBIBalance(injectedProvider, chainId);
             })
         } else {
-            setBalance("-")
+            setUbiBalance("-")
         }
-    }, [injectedProvider, accountAddress])
+        console.log(injectedProvider, accountAddress, "??");
+    }, [injectedProvider, accountAddress, chainId])
     
     function truncateBalance(str: string, maxDecimalDigits: number) {
         if (str.includes('.')) {
@@ -45,7 +47,7 @@ const Web3Account = () => {
                 (<Box display="flex" p="2" borderRadius="8" onClick={onOpen} cursor="pointer">
                     <Box px="2">
                         <Text>
-                            {balance} {getNativeCurrency(chainId ?? 0)}
+                            {ubiBalance} UBI
                         </Text>
                     </Box>
                     <Box px="2">
