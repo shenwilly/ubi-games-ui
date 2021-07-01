@@ -23,19 +23,19 @@ const Web3Account = () => {
     }
 
     function truncateAddress(str: string) {
-        return str.substr(0, 5) + "..." + str.substr(str.length - 4, 5);
+        return str.substr(0, 6) + "..." + str.substr(str.length - 5, 6);
     }
 
     return (
         <Flex align="center">
             {injectedProvider &&
                 (<Box display="flex" p="2" borderRadius="8" onClick={onOpen} cursor="pointer">
-                    <Box px="2">
+                    <Box px="2" py="1" border="1px" borderColor="black.200" borderRadius={15} mr={4}>
                         <Text>
                             {ubiBalanceLabel()} UBI
                         </Text>
                     </Box>
-                    <Box px="2">
+                    <Box px="2" py="1" border="1px" borderColor="black.200" borderRadius={15}>
                         <Text>
                             {truncateAddress(accountAddress)}
                         </Text>

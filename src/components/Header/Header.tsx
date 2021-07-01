@@ -13,9 +13,9 @@ const Header = () => {
         <StyledHeader maxW="container.xl">
             <StyledRow align="center">
                 <Text cursor="pointer" textStyle="appTitle" onClick={() => history.push('/')}>UBIroll</Text>
-                <NavMenu onClick={() => history.push('/game')}>
+                {/* <NavMenu onClick={() => history.push('/game')}>
                     Play
-                </NavMenu>
+                </NavMenu> */}
                 <Spacer />
                 <Web3Account />
                 {/* <Button onClick={toggleColorMode} p="2" size="md" variant="ghost">

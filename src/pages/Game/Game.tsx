@@ -49,13 +49,17 @@ const Game = () => {
       const result = await createBet(parseUnits(betAmount, 18), betChance);
       console.log("BET:", result);
     }
+
+    const formatBN = (number: BigNumber, decimals: number = 2) => {
+      return parseFloat(formatUnits(number, 18)).toFixed(decimals);
+    }
   
     return (
       <PageLayout>
-        <SimpleGrid columns={2} columnGap={8}>
+        <SimpleGrid columns={[1, 2]} columnGap={8}>
           <Flex direction="column">
-              <Text mt={5}>House Balance: {formatUnits(houseUbiBalance, 18)} UBI</Text>
-              <Text mt={2}>Max payout: {formatUnits(maxPayout, 18)} UBI</Text>
+              <Text mt={5}>House Balance: {formatBN(houseUbiBalance, 4)} UBI</Text>
+              <Text mt={2}>Max payout: {formatBN(maxPayout, 4)} UBI</Text>
 
               <Text mt={5}>Bet Amount:</Text>
               <Input mt={2} 
@@ -86,7 +90,7 @@ const Game = () => {
                 </GridItem>
               </Grid>
 
-              <Text mt={5}>Payout: {formatUnits(payout, 18)} UBI</Text>
+              <Text mt={5}>Payout: {formatBN(payout, 3)} UBI</Text>
 
               {canCreateBet 
                 ? (<Button mt={5} size="lg" onClick={bet}>
@@ -96,14 +100,11 @@ const Game = () => {
                     {validationMsg}
                   </Button>)
               }
-              
           </Flex>
-          <Box bg="#F6F6F6" borderRadius={8}>
+          <Box bg="#F6F6F6" borderRadius={8} p={5} mt={[8, 0]}>
+            History
           </Box>
         </SimpleGrid>
-        <Box width="100%" height="100px"  bg="#F6F6F6" borderRadius={8} mt={5} p={5}>
-          History
-        </Box>
       </PageLayout>
     );
 };

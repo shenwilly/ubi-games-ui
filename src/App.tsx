@@ -18,11 +18,14 @@ function App() {
         <Header />
         <BodyWrapper maxW="container.xl" display="flex" alignItems="start" justifyContent="center">
           <Switch>
-            <Route path="/game">
+            {/* <Route path="/game">
               <Game />
             </Route>
             <Route path="/">
               <Home />
+            </Route> */}
+            <Route path="/">
+              <Game />
             </Route>
           </Switch>
         </BodyWrapper>
@@ -35,6 +38,12 @@ const SiteWrapper = styled.div`
   width: 100vw;
   height: 100vh;
   overflow-y: scroll;
+  z-index: 1;
+  // background-color: #fff;
+  // background-image:
+  //   radial-gradient(at top left, rgb(242,237,220), transparent),
+  //   radial-gradient(at top right, rgb(242,227,200), transparent),
+  //   radial-gradient(at bottom left, rgb(242,227,200), transparent);
 `;
 
 const BodyWrapper = styled(Container)`
