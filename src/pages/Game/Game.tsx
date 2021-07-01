@@ -1,29 +1,48 @@
 import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid } from "@chakra-ui/react"
+import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import PageLayout from "../../components/PageLayout";
 import useUbiroll from "../../hooks/useUbiroll";
 
 const Game = () => {
-    const { createBet } = useUbiroll();
-    const houseBalance = 10000;
-    const maxPayout = houseBalance/100;
+    const { createBet, ubiBalance, houseUbiBalance } = useUbiroll();
     const minBet = "5";
     const [betAmount, setBetAmount] = useState(minBet);
     const [betChance, setBetChance] = useState(50);
+    const [validationMsg, setValidationMsg] = useState("");
     const houseEdge = 1;
 
-    const payout = () => {
-      if (!betAmount || !betChance || !houseEdge) return "-";
+    const maxPayout = useMemo(() => {
+      return houseUbiBalance.div(100);
+    }, [houseUbiBalance]);
 
-      return (parseInt(betAmount) * (100-houseEdge)) / betChance;
-    }
+    const payout = useMemo(() => {
+      if (betAmount.length === 0 || !betChance || !houseEdge) return BigNumber.from(0);
 
-    const canCreateBet = () => {
-      if (payout() > maxPayout) return false;
+      const betAmountBN = parseUnits(betAmount, 18);
+      return (betAmountBN.mul(100-houseEdge)).div(betChance);
+    }, [betAmount, betChance, houseEdge]);
+
+    const canCreateBet = useMemo(() => {
+      if (betAmount.length === 0 || parseUnits(betAmount, 18).lte(0)) {
+        setValidationMsg("Input bet amount");
+        return false;
+      }
+      
+      if (ubiBalance.lt(parseUnits(betAmount, 18))) {
+        setValidationMsg("Not enough UBI");
+        return false;
+      }
+      
+      if (payout.gt(maxPayout)) {
+        setValidationMsg("Payout too large");
+        return false;
+      }
+      
       return true;
-    }
+    }, [payout, maxPayout, ubiBalance]);
 
     const bet = async () => {
       console.log(betAmount, betChance)
@@ -35,12 +54,14 @@ const Game = () => {
       <PageLayout>
         <SimpleGrid columns={2} columnGap={8}>
           <Flex direction="column">
-              <Text mt={5}>House Balance: {houseBalance} UBI</Text>
-              <Text mt={2}>Max payout: {maxPayout} UBI</Text>
+              <Text mt={5}>House Balance: {formatUnits(houseUbiBalance, 18)} UBI</Text>
+              <Text mt={2}>Max payout: {formatUnits(maxPayout, 18)} UBI</Text>
 
               <Text mt={5}>Bet Amount:</Text>
               <Input mt={2} 
                 value={betAmount}
+                min={0}
+                type={'number'}
                 onChange={(e) => setBetAmount(e.target.value)}/>
 
               <Text mt={5}>Chance</Text>
@@ -65,11 +86,17 @@ const Game = () => {
                 </GridItem>
               </Grid>
 
-              <Text mt={5}>Payout: {payout()} UBI</Text>
+              <Text mt={5}>Payout: {formatUnits(payout, 18)} UBI</Text>
 
-              <Button mt={5} size="lg" onClick={bet}>
-                Place Bet
-              </Button>
+              {canCreateBet 
+                ? (<Button mt={5} size="lg" onClick={bet}>
+                    Place Bet
+                  </Button>)
+                : (<Button mt={5} size="lg" disabled>
+                    {validationMsg}
+                  </Button>)
+              }
+              
           </Flex>
           <Box bg="#F6F6F6" borderRadius={8}>
           </Box>
