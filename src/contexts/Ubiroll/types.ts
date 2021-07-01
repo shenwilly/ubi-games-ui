@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 export interface ContextValues {
     ubiAddress: string,
     ubiBalance: BigNumber,
+    houseUbiBalance: BigNumber,
     allowance: BigNumber,
     isApproving: boolean,
     isApproved: boolean,

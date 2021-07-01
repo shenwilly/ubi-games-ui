@@ -6,21 +6,28 @@ import { Web3Provider } from "@ethersproject/providers";
 import { getUBIAddress } from "../../utils/ubi";
 import { BigNumber, ethers } from "ethers";
 import { getERC20Balance } from "../../utils/web3";
-import { UBIROLL_ADDRESS } from "../../constants/address";
-import { Ubiroll } from "../../types/eth";
+import { UBIROLL_ADDRESS, VAULT_ADDRESS } from "../../constants/address";
+import { UbiGamesVault, Ubiroll } from "../../types/eth";
 import UbirollAbi from "../../constants/abis/Ubiroll.json";
+import VaultAbi from "../../constants/abis/UbiGamesVault.json";
 
 const Provider: React.FC = ({ children }) => {
     const { accountAddress, chainId, web3Account, injectedProvider } = useWeb3();
     const [ ubiAddress, setUbiAddress ] = useState<string>("");
     const [ ubiBalance, setUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
+    const [ houseUbiBalance, setHouseUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
     const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, accountAddress);
 
     const fetchUBIBalance = async () => {
       if (accountAddress && ubiAddress && injectedProvider) {
         let balance = await getERC20Balance(accountAddress, ubiAddress, injectedProvider);
         setUbiBalance(balance);
+
+        const vault = (new ethers.Contract(VAULT_ADDRESS, VaultAbi, injectedProvider)) as UbiGamesVault;
+        let houseBalance = await vault.getUbiBalance();
+        setHouseUbiBalance(houseBalance);
       } else {
+        setUbiBalance(BigNumber.from(0));
         setUbiBalance(BigNumber.from(0));
       }
     }
@@ -59,6 +66,7 @@ const Provider: React.FC = ({ children }) => {
             value={{
               ubiAddress,
               ubiBalance,
+              houseUbiBalance,
               allowance,
               isApproving,
               isApproved,
