@@ -1,6 +1,6 @@
 import { 
   Modal, ModalContent, ModalOverlay, ModalCloseButton, ModalHeader, ModalBody, 
-  Text, Button
+  Text, Button, VStack, Center
 } from "@chakra-ui/react"
 
 interface Web3AccountModalProps {
@@ -16,14 +16,19 @@ const Web3AccountModal: React.FC<Web3AccountModalProps> = ({ isOpen, onClose, lo
           <ModalOverlay />
           <ModalContent>
               <ModalHeader>
-                  <Text fontSize="sm">{address}</Text>
+                  <Text fontSize="sm">Connected Account</Text>
               </ModalHeader>
               <ModalCloseButton />
               <ModalBody p="5">
+                <VStack spacing={5}>
+                  <Center>
+                    <Text fontWeight="bold" width="100%" fontSize="sm">{address}</Text>
+                  </Center>
                   <Button
                       isFullWidth={true}
                       onClick={logoutOfWeb3Modal}
                       >Disconnect</Button>
+                </VStack>
               </ModalBody>
           </ModalContent>
       </Modal>
