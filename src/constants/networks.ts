@@ -1,5 +1,10 @@
 import { NETWORK } from "../types";
 
+export enum NETWORKS {
+  MAINNET = 1,
+  MATIC = 137
+}
+
 export const NETWORK_CONFIGS: {[key: number]: NETWORK} = {
   1: {
     name: "MAINNET",

@@ -10,6 +10,7 @@ import { UBIROLL_ADDRESS, VAULT_ADDRESS } from "../../constants/address";
 import { UbiGamesVault, Ubiroll } from "../../types/eth";
 import UbirollAbi from "../../constants/abis/Ubiroll.json";
 import VaultAbi from "../../constants/abis/UbiGamesVault.json";
+import { NETWORKS } from "../../constants/networks";
 
 const Provider: React.FC = ({ children }) => {
     const { accountAddress, chainId, web3Account, injectedProvider } = useWeb3();
@@ -22,13 +23,18 @@ const Provider: React.FC = ({ children }) => {
       if (accountAddress && ubiAddress && injectedProvider) {
         let balance = await getERC20Balance(accountAddress, ubiAddress, injectedProvider);
         setUbiBalance(balance);
+      } else {
+        setUbiBalance(BigNumber.from(0));
+      }
+    }
 
+    const fetchHouseBalance = async () => {
+      if (injectedProvider && chainId == NETWORKS.MATIC) {
         const vault = (new ethers.Contract(VAULT_ADDRESS, VaultAbi, injectedProvider)) as UbiGamesVault;
         let houseBalance = await vault.getUbiBalance();
         setHouseUbiBalance(houseBalance);
       } else {
-        setUbiBalance(BigNumber.from(0));
-        setUbiBalance(BigNumber.from(0));
+        setHouseUbiBalance(BigNumber.from(0));
       }
     }
 
@@ -44,6 +50,12 @@ const Provider: React.FC = ({ children }) => {
       let refreshInterval = setInterval(fetchUBIBalance, 10000);
       return () => clearInterval(refreshInterval);
     }, [injectedProvider, accountAddress, ubiAddress])
+
+    useEffect(() => {
+      fetchHouseBalance();
+      let refreshInterval = setInterval(fetchHouseBalance, 10000);
+      return () => clearInterval(refreshInterval);
+    }, [injectedProvider, chainId])
 
     const createBet = useCallback(
       async (amount: BigNumber, chance: number) => {
