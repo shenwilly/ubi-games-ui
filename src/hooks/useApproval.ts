@@ -15,7 +15,7 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
         return;
       }
       const allowance = await getAllowance(accountAddress, spenderAddress, tokenAddress, injectedProvider);
-      setAllowance(BigNumber.from(allowance));
+      setAllowance(allowance);
     },
     [setAllowance, spenderAddress, tokenAddress]
   );

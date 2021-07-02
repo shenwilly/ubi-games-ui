@@ -62,9 +62,7 @@ const Provider: React.FC = ({ children }) => {
         if (!amount || !chance || !injectedProvider || !web3Account) {
           return;
         }
-        // const allowance = await getAllowance(userAddress, spenderAddress, tokenAddress, provider);
-        // console.log("allowance", allowance);
-        // setAllowance(BigNumber.from(allowance));
+        
         const ubiroll = (new ethers.Contract(UBIROLL_ADDRESS, UbirollAbi, injectedProvider)) as Ubiroll;
         const tx =  await ubiroll.connect(web3Account).createBet(chance, amount);
         const receipt = await tx.wait();
