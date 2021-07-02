@@ -19,24 +19,24 @@ const Provider: React.FC = ({ children }) => {
     const [ houseUbiBalance, setHouseUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
     const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, VAULT_ADDRESS);
 
-    const fetchUBIBalance = async () => {
+    const fetchUBIBalance = useCallback(async () => {
       if (accountAddress && ubiAddress && injectedProvider) {
         let balance = await getERC20Balance(accountAddress, ubiAddress, injectedProvider);
         setUbiBalance(balance);
       } else {
         setUbiBalance(BigNumber.from(0));
       }
-    }
+    }, [accountAddress, ubiAddress, injectedProvider])
 
-    const fetchHouseBalance = async () => {
-      if (injectedProvider && chainId == NETWORKS.MATIC) {
+    const fetchHouseBalance = useCallback(async () => {
+      if (injectedProvider && chainId === NETWORKS.MATIC) {
         const vault = (new ethers.Contract(VAULT_ADDRESS, VaultAbi, injectedProvider)) as UbiGamesVault;
         let houseBalance = await vault.getUbiBalance();
         setHouseUbiBalance(houseBalance);
       } else {
         setHouseUbiBalance(BigNumber.from(0));
       }
-    }
+    }, [injectedProvider, chainId])
 
     useEffect(() => {
       if (chainId) {
@@ -49,13 +49,13 @@ const Provider: React.FC = ({ children }) => {
       fetchUBIBalance();
       let refreshInterval = setInterval(fetchUBIBalance, 10000);
       return () => clearInterval(refreshInterval);
-    }, [injectedProvider, accountAddress, ubiAddress])
+    }, [injectedProvider, accountAddress, ubiAddress, fetchUBIBalance])
 
     useEffect(() => {
       fetchHouseBalance();
       let refreshInterval = setInterval(fetchHouseBalance, 10000);
       return () => clearInterval(refreshInterval);
-    }, [injectedProvider, chainId])
+    }, [injectedProvider, chainId, fetchHouseBalance])
 
     const createBet = useCallback(
       async (amount: BigNumber, chance: number) => {
@@ -66,7 +66,7 @@ const Provider: React.FC = ({ children }) => {
         const ubiroll = (new ethers.Contract(UBIROLL_ADDRESS, UbirollAbi, injectedProvider)) as Ubiroll;
         const tx =  await ubiroll.connect(web3Account).createBet(chance, amount);
         const receipt = await tx.wait();
-        return receipt.status == 1;
+        return receipt.status === 1;
       },
       [web3Account, injectedProvider]
     );

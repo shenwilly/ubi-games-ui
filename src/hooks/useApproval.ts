@@ -15,10 +15,9 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
         return;
       }
       const allowance = await getAllowance(accountAddress, spenderAddress, tokenAddress, injectedProvider);
-      console.log(allowance.toString(), "?")
       setAllowance(allowance);
     },
-    [setAllowance, spenderAddress, tokenAddress]
+    [setAllowance, spenderAddress, tokenAddress, injectedProvider, accountAddress]
   );
 
   const handleApprove = useCallback(async () => {
@@ -29,7 +28,7 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
       setIsApproving(true);
       const tx = await approve(spenderAddress, tokenAddress, constants.MaxUint256, injectedProvider, web3Account);
       const receipt = await tx.wait();
-      setIsApproved(receipt.status == 1);
+      setIsApproved(receipt.status === 1);
       setIsApproving(false);
     } catch (e) {
       setIsApproving(false);
@@ -37,17 +36,11 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
     }
   }, [web3Account, injectedProvider, setIsApproved, setIsApproving, spenderAddress, tokenAddress]);
 
-  // useEffect(() => {
-  //   if (allowance.gt(0)) {
-  //     setIsApproved(true);
-  //   }
-  // }, [allowance, setIsApproved]);
-
   useEffect(() => {
     fetchAllowance();
     let refreshInterval = setInterval(fetchAllowance, 10000);
     return () => clearInterval(refreshInterval);
-  }, [accountAddress, injectedProvider, spenderAddress, tokenAddress]);
+  }, [fetchAllowance, injectedProvider, spenderAddress, tokenAddress]);
 
   return {
     allowance,

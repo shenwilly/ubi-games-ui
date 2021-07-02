@@ -1,13 +1,14 @@
 import React from "react"
-import { Container } from "@chakra-ui/react"
+import { Container, ResponsiveValue } from "@chakra-ui/react"
 
 interface PageLayoutProps {
-  maxWidth?: string
+  maxWidth?: string,
+  height?: ResponsiveValue<number | (string & {})>
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ maxWidth="container.xl", children }) => {
+const PageLayout: React.FC<PageLayoutProps> = ({ maxWidth="container.xl", height, children }) => {
   return (
-    <Container maxW={maxWidth} py="8">
+    <Container maxW={maxWidth} py="8" height={height}>
       {children}
     </Container>
   );

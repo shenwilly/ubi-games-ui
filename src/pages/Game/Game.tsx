@@ -1,9 +1,11 @@
-import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid } from "@chakra-ui/react"
+import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center } from "@chakra-ui/react"
 import { BigNumber } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { parseUnits } from "ethers/lib/utils";
 import { useMemo, useState } from "react";
+import ButtonUBI from "../../components/Game/ButtonUBI";
 import PageLayout from "../../components/PageLayout";
 import useUbiroll from "../../hooks/useUbiroll";
+import { formatBN } from "../../utils/bigNumber";
 
 const Game = () => {
     const { createBet, ubiBalance, houseUbiBalance, allowance, onApprove } = useUbiroll();
@@ -52,9 +54,9 @@ const Game = () => {
       } else {
         setAllowanceEnough(true);
       }
-      
+
       return true;
-    }, [payout, maxPayout, ubiBalance, allowance]);
+    }, [payout, maxPayout, ubiBalance, allowance, betAmountBN]);
 
     const bet = async () => {
       console.log(betAmount, betChance)
@@ -62,13 +64,9 @@ const Game = () => {
       console.log("BET:", result);
     }
 
-    const formatBN = (number: BigNumber, decimals: number = 2) => {
-      return parseFloat(formatUnits(number, 18)).toFixed(decimals);
-    }
-  
     return (
-      <PageLayout>
-        <SimpleGrid columns={[1, 2]} columnGap={8}>
+      <PageLayout height={["", "100%"]}>
+        <SimpleGrid columns={[1, 2]} columnGap={8} height="100%">
           <Flex direction="column">
               <Text mt={5}>House Balance: {formatBN(houseUbiBalance, 4)} UBI</Text>
               <Text mt={2}>Max payout: {formatBN(maxPayout, 4)} UBI</Text>
@@ -118,6 +116,11 @@ const Game = () => {
                 (<Button mt={5} size="lg" onClick={onApprove}>
                   Approve
                 </Button>)
+              }
+              {ubiBalance.lte(0) &&
+                (<Center>
+                  <ButtonUBI />
+                </Center>)
               }
           </Flex>
           <Box bg="#F6F6F6" borderRadius={8} p={5} mt={[8, 0]}>

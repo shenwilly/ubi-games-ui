@@ -6,7 +6,6 @@ import styled, { ThemeProvider } from "styled-components"
 import Header from "./components/Header"
 import chakraTheme from "./utils/chakraTheme"
 
-import Home from "./pages/Home"
 import Game from "./pages/Game"
 import { Web3Provider } from "./contexts/Web3"
 import { UbirollProvider } from "./contexts/Ubiroll"
@@ -18,12 +17,6 @@ function App() {
         <Header />
         <BodyWrapper maxW="container.xl" display="flex" alignItems="start" justifyContent="center">
           <Switch>
-            {/* <Route path="/game">
-              <Game />
-            </Route>
-            <Route path="/">
-              <Home />
-            </Route> */}
             <Route path="/">
               <Game />
             </Route>
