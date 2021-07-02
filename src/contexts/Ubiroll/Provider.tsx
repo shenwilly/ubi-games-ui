@@ -17,7 +17,7 @@ const Provider: React.FC = ({ children }) => {
     const [ ubiAddress, setUbiAddress ] = useState<string>("");
     const [ ubiBalance, setUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
     const [ houseUbiBalance, setHouseUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
-    const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, accountAddress);
+    const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, VAULT_ADDRESS);
 
     const fetchUBIBalance = async () => {
       if (accountAddress && ubiAddress && injectedProvider) {

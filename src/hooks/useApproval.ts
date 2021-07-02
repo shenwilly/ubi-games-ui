@@ -15,6 +15,7 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
         return;
       }
       const allowance = await getAllowance(accountAddress, spenderAddress, tokenAddress, injectedProvider);
+      console.log(allowance.toString(), "?")
       setAllowance(allowance);
     },
     [setAllowance, spenderAddress, tokenAddress]
@@ -36,11 +37,11 @@ const useApproval = (tokenAddress?: string, spenderAddress?: string) => {
     }
   }, [web3Account, injectedProvider, setIsApproved, setIsApproving, spenderAddress, tokenAddress]);
 
-  useEffect(() => {
-    if (!!allowance?.toNumber()) {
-      setIsApproved(true);
-    }
-  }, [allowance, setIsApproved]);
+  // useEffect(() => {
+  //   if (allowance.gt(0)) {
+  //     setIsApproved(true);
+  //   }
+  // }, [allowance, setIsApproved]);
 
   useEffect(() => {
     fetchAllowance();

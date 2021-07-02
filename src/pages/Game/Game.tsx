@@ -2,21 +2,26 @@ import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, Slid
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { useMemo, useState } from "react";
-import styled from "styled-components";
 import PageLayout from "../../components/PageLayout";
 import useUbiroll from "../../hooks/useUbiroll";
 
 const Game = () => {
-    const { createBet, ubiBalance, houseUbiBalance } = useUbiroll();
+    const { createBet, ubiBalance, houseUbiBalance, allowance, onApprove } = useUbiroll();
     const minBet = "5";
     const [betAmount, setBetAmount] = useState(minBet);
     const [betChance, setBetChance] = useState(50);
+    const [allowanceEnough, setAllowanceEnough] = useState(true);
     const [validationMsg, setValidationMsg] = useState("");
     const houseEdge = 1;
 
     const maxPayout = useMemo(() => {
       return houseUbiBalance.div(100);
     }, [houseUbiBalance]);
+
+    const betAmountBN = useMemo(() => {
+      if (betAmount.length === 0) return BigNumber.from(0);
+      return parseUnits(betAmount, 18);
+    }, [betAmount]);
 
     const payout = useMemo(() => {
       if (betAmount.length === 0 || !betChance || !houseEdge) return BigNumber.from(0);
@@ -26,12 +31,12 @@ const Game = () => {
     }, [betAmount, betChance, houseEdge]);
 
     const canCreateBet = useMemo(() => {
-      if (betAmount.length === 0 || parseUnits(betAmount, 18).lte(0)) {
+      if (betAmountBN.lte(0)) {
         setValidationMsg("Input bet amount");
         return false;
       }
       
-      if (ubiBalance.lt(parseUnits(betAmount, 18))) {
+      if (ubiBalance.lt(betAmountBN)) {
         setValidationMsg("Not enough UBI");
         return false;
       }
@@ -41,8 +46,15 @@ const Game = () => {
         return false;
       }
       
+      if (allowance.lt(betAmountBN)) {
+        setAllowanceEnough(false);
+        return false;
+      } else {
+        setAllowanceEnough(true);
+      }
+      
       return true;
-    }, [payout, maxPayout, ubiBalance]);
+    }, [payout, maxPayout, ubiBalance, allowance]);
 
     const bet = async () => {
       console.log(betAmount, betChance)
@@ -92,13 +104,20 @@ const Game = () => {
 
               <Text mt={5}>Payout: {formatBN(payout, 3)} UBI</Text>
 
-              {canCreateBet 
-                ? (<Button mt={5} size="lg" onClick={bet}>
-                    Place Bet
-                  </Button>)
-                : (<Button mt={5} size="lg" disabled>
-                    {validationMsg}
-                  </Button>)
+              {canCreateBet && allowanceEnough &&
+                (<Button mt={5} size="lg" onClick={bet}>
+                  Place Bet
+                </Button>)
+              }    
+              {!canCreateBet && allowanceEnough &&
+                (<Button mt={5} size="lg" disabled>
+                  {validationMsg}
+                </Button>)
+              }          
+              {!allowanceEnough &&
+                (<Button mt={5} size="lg" onClick={onApprove}>
+                  Approve
+                </Button>)
               }
           </Flex>
           <Box bg="#F6F6F6" borderRadius={8} p={5} mt={[8, 0]}>
