@@ -4,11 +4,13 @@ import useWeb3 from "../../hooks/useWeb3";
 import Web3AccountModal from "../Web3AccountModal";
 import useUbiroll from "../../hooks/useUbiroll";
 import { formatUnits } from "ethers/lib/utils";
+import UbiModal from "../UbiModal";
 
 const Web3Account = () => {
     const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, accountAddress } = useWeb3()
     const { ubiBalance } = useUbiroll()
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const accountModal = useDisclosure()
+    const ubiModal = useDisclosure()
 
     const ubiBalanceLabel = useCallback(() => {
         return truncateBalance(formatUnits(ubiBalance, 18), 4);
@@ -29,13 +31,17 @@ const Web3Account = () => {
     return (
         <Flex align="center">
             {injectedProvider &&
-                (<Box display="flex" p="2" borderRadius="8" onClick={onOpen} cursor="pointer">
-                    <Box px="2" py="1" border="1px" borderColor="black.200" borderRadius={15} mr={4}>
+                (<Box display="flex" p="2" borderRadius="8">
+                    <Box px="2" py="1" border="1px" borderColor="black.200" cursor="pointer"
+                        borderRadius={15} mr={4} 
+                        onClick={ubiModal.onOpen}>
                         <Text>
                             {ubiBalanceLabel()} UBI
                         </Text>
                     </Box>
-                    <Box px="2" py="1" border="1px" borderColor="black.200" borderRadius={15}>
+                    <Box px="2" py="1" border="1px" borderColor="black.200" cursor="pointer"
+                        borderRadius={15} 
+                        onClick={accountModal.onOpen}>
                         <Text>
                             {truncateAddress(accountAddress)}
                         </Text>
@@ -47,10 +53,13 @@ const Web3Account = () => {
                     <Button onClick={loadWeb3Modal} >Connect to Wallet</Button>}
             </Box>
             <Web3AccountModal 
-                isOpen={isOpen} 
-                onClose={onClose}
+                isOpen={accountModal.isOpen} 
+                onClose={accountModal.onClose}
                 logoutOfWeb3Modal={logoutOfWeb3Modal}
                 address={accountAddress} />
+            <UbiModal 
+                isOpen={ubiModal.isOpen} 
+                onClose={ubiModal.onClose}/>
         </Flex>
     );
 };
