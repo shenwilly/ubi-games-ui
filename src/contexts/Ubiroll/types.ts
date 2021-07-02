@@ -4,6 +4,7 @@ export interface ContextValues {
     ubiAddress: string,
     ubiBalance: BigNumber,
     houseUbiBalance: BigNumber,
+    minBet: BigNumber,
     allowance: BigNumber,
     isApproving: boolean,
     isApproved: boolean,

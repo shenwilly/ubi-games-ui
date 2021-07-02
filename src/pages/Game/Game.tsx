@@ -8,9 +8,8 @@ import useUbiroll from "../../hooks/useUbiroll";
 import { formatBN } from "../../utils/bigNumber";
 
 const Game = () => {
-    const { createBet, ubiBalance, houseUbiBalance, allowance, onApprove } = useUbiroll();
-    const minBet = "5";
-    const [betAmount, setBetAmount] = useState(minBet);
+    const { createBet, ubiBalance, houseUbiBalance, minBet, allowance, onApprove } = useUbiroll();
+    const [betAmount, setBetAmount] = useState(formatBN(minBet));
     const [betChance, setBetChance] = useState(50);
     const [allowanceEnough, setAllowanceEnough] = useState(true);
     const [validationMsg, setValidationMsg] = useState("");
@@ -38,6 +37,11 @@ const Game = () => {
         return false;
       }
       
+      if (betAmountBN.lt(minBet)) {
+        setValidationMsg("Bet too small");
+        return false;
+      }
+
       if (ubiBalance.lt(betAmountBN)) {
         setValidationMsg("Not enough UBI");
         return false;
@@ -59,17 +63,15 @@ const Game = () => {
     }, [payout, maxPayout, ubiBalance, allowance, betAmountBN]);
 
     const bet = async () => {
-      console.log(betAmount, betChance)
-      const result = await createBet(parseUnits(betAmount, 18), betChance);
-      console.log("BET:", result);
+      await createBet(parseUnits(betAmount, 18), betChance);
     }
 
     return (
       <PageLayout height={["", "100%"]}>
         <SimpleGrid columns={[1, 2]} columnGap={8} height="100%">
           <Flex direction="column">
-              <Text mt={5}>House Balance: {formatBN(houseUbiBalance, 4)} UBI</Text>
-              <Text mt={2}>Max payout: {formatBN(maxPayout, 4)} UBI</Text>
+              {/* <Text mt={5}>House Balance: {formatBN(houseUbiBalance, 4)} UBI</Text> */}
+              <Text mt={2}>Minimum bet: {formatBN(minBet)} UBI</Text>
 
               <Text mt={5}>Bet Amount:</Text>
               <Input mt={2} 
@@ -101,6 +103,7 @@ const Game = () => {
               </Grid>
 
               <Text mt={5}>Payout: {formatBN(payout, 3)} UBI</Text>
+              <Text mt={2}>Max payout: {formatBN(maxPayout, 4)} UBI</Text>
 
               {canCreateBet && allowanceEnough &&
                 (<Button mt={5} size="lg" onClick={bet}>

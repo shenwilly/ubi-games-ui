@@ -16,6 +16,7 @@ const Provider: React.FC = ({ children }) => {
     const { accountAddress, chainId, web3Account, injectedProvider } = useWeb3();
     const [ ubiAddress, setUbiAddress ] = useState<string>("");
     const [ ubiBalance, setUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
+    const [ minBet, setMinBet ] = useState<BigNumber>(BigNumber.from(0));
     const [ houseUbiBalance, setHouseUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
     const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, VAULT_ADDRESS);
 
@@ -38,6 +39,16 @@ const Provider: React.FC = ({ children }) => {
       }
     }, [injectedProvider, chainId])
 
+    const fetchMinBet = useCallback(async () => {
+      if (injectedProvider && chainId === NETWORKS.MATIC) {
+        const ubiroll = (new ethers.Contract(UBIROLL_ADDRESS, UbirollAbi, injectedProvider)) as Ubiroll;
+        let amount = await ubiroll.minBet();
+        setMinBet(amount);
+      } else {
+        setMinBet(BigNumber.from(0));
+      }
+    }, [injectedProvider, chainId])
+
     useEffect(() => {
       if (chainId) {
         const tokenAddress = getUBIAddress(chainId);
@@ -56,6 +67,12 @@ const Provider: React.FC = ({ children }) => {
       let refreshInterval = setInterval(fetchHouseBalance, 10000);
       return () => clearInterval(refreshInterval);
     }, [injectedProvider, chainId, fetchHouseBalance])
+
+    useEffect(() => {
+      fetchMinBet();
+      let refreshInterval = setInterval(fetchMinBet, 30000);
+      return () => clearInterval(refreshInterval);
+    }, [injectedProvider, chainId, fetchMinBet])
 
     const createBet = useCallback(
       async (amount: BigNumber, chance: number) => {
@@ -77,6 +94,7 @@ const Provider: React.FC = ({ children }) => {
               ubiAddress,
               ubiBalance,
               houseUbiBalance,
+              minBet,
               allowance,
               isApproving,
               isApproved,
