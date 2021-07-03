@@ -1,7 +1,8 @@
-import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center } from "@chakra-ui/react"
+import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center, Spacer } from "@chakra-ui/react"
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { useMemo, useState } from "react";
+import BetHistory from "../../components/Game/BetHistory";
 import ButtonUBI from "../../components/Game/ButtonUBI";
 import PageLayout from "../../components/PageLayout";
 import useUbiroll from "../../hooks/useUbiroll";
@@ -60,7 +61,7 @@ const Game = () => {
       }
 
       return true;
-    }, [payout, maxPayout, ubiBalance, allowance, betAmountBN]);
+    }, [payout, maxPayout, ubiBalance, allowance, betAmountBN, minBet]);
 
     const bet = async () => {
       await createBet(parseUnits(betAmount, 18), betChance);
@@ -126,8 +127,13 @@ const Game = () => {
                 </Center>)
               }
           </Flex>
-          <Box bg="#F6F6F6" borderRadius={8} p={5} mt={[8, 0]}>
-            History
+          <Box mt={[8, 0]}>
+            <Flex mb={5}>
+              <Text>Total Burned: 100 UBI</Text>
+              <Spacer />
+              <Text>Total Won: 100 UBI</Text>
+            </Flex>
+            <BetHistory height={["", "90%"]}/>
           </Box>
         </SimpleGrid>
       </PageLayout>
