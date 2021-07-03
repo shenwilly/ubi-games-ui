@@ -26,20 +26,20 @@ const ButtonBet: React.FC<ButtonBetProps> = ({ validationStatus, onApprove, onBe
     }, [validationStatus])
 
     const handleClick = useCallback(() => {
-      if (validationStatus == BetValidStatus.WEB3_NOT_EXIST) {
+      if (validationStatus === BetValidStatus.WEB3_NOT_EXIST) {
         onConnect();
-      } else if (validationStatus == BetValidStatus.ALLOWANCE_NOT_ENOUGH) {
+      } else if (validationStatus === BetValidStatus.ALLOWANCE_NOT_ENOUGH) {
         onApprove();
-      } else if (validationStatus == BetValidStatus.VALID) {
+      } else if (validationStatus === BetValidStatus.VALID) {
         onBet();
       }
-    }, [validationStatus])
+    }, [validationStatus, onConnect, onApprove, onBet])
 
     const disabled = useMemo(() => {
       return (
-        validationStatus != BetValidStatus.WEB3_NOT_EXIST
-        && validationStatus != BetValidStatus.ALLOWANCE_NOT_ENOUGH
-        && validationStatus != BetValidStatus.VALID)
+        validationStatus !== BetValidStatus.WEB3_NOT_EXIST
+        && validationStatus !== BetValidStatus.ALLOWANCE_NOT_ENOUGH
+        && validationStatus !== BetValidStatus.VALID)
     }, [validationStatus])
 
     return (

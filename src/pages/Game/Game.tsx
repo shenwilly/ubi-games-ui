@@ -60,7 +60,7 @@ const Game = () => {
       }
 
       return BetValidStatus.VALID;
-    }, [payout, maxPayout, ubiBalance, allowance, betAmountBN, minBet]);
+    }, [payout, maxPayout, ubiBalance, allowance, betAmountBN, minBet, injectedProvider]);
 
     const bet = async () => {
       await createBet(parseUnits(betAmount, 18), betChance);
