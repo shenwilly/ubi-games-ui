@@ -1,19 +1,21 @@
-import { Button, Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center, Spacer } from "@chakra-ui/react"
+import { Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center, Spacer } from "@chakra-ui/react"
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { useMemo, useState } from "react";
 import BetHistory from "../../components/Game/BetHistory";
+import ButtonBet from "../../components/Game/ButtonBet";
 import ButtonUBI from "../../components/Game/ButtonUBI";
 import PageLayout from "../../components/PageLayout";
 import useUbiroll from "../../hooks/useUbiroll";
+import useWeb3 from "../../hooks/useWeb3";
+import { BetValidStatus } from "../../types";
 import { formatBN } from "../../utils/bigNumber";
 
 const Game = () => {
+    const { injectedProvider, loadWeb3Modal } = useWeb3();
     const { createBet, ubiBalance, houseUbiBalance, minBet, allowance, onApprove } = useUbiroll();
     const [betAmount, setBetAmount] = useState(formatBN(minBet));
     const [betChance, setBetChance] = useState(50);
-    const [allowanceEnough, setAllowanceEnough] = useState(true);
-    const [validationMsg, setValidationMsg] = useState("");
     const houseEdge = 1;
 
     const maxPayout = useMemo(() => {
@@ -32,35 +34,32 @@ const Game = () => {
       return (betAmountBN.mul(100-houseEdge)).div(betChance);
     }, [betAmount, betChance, houseEdge]);
 
-    const canCreateBet = useMemo(() => {
+    const validStatus = useMemo((): BetValidStatus => {
+      if (!injectedProvider) {
+        return BetValidStatus.WEB3_NOT_EXIST;
+      }
+
       if (betAmountBN.lte(0)) {
-        setValidationMsg("Input bet amount");
-        return false;
+        return BetValidStatus.AMOUNT_ZERO;
       }
       
       if (betAmountBN.lt(minBet)) {
-        setValidationMsg("Bet too small");
-        return false;
+        return BetValidStatus.AMOUNT_TOO_SMALL;
       }
 
       if (ubiBalance.lt(betAmountBN)) {
-        setValidationMsg("Not enough UBI");
-        return false;
+        return BetValidStatus.BALANCE_NOT_ENOUGH;
       }
       
       if (payout.gt(maxPayout)) {
-        setValidationMsg("Payout too large");
-        return false;
+        return BetValidStatus.PAYOUT_TOO_BIG
       }
       
       if (allowance.lt(betAmountBN)) {
-        setAllowanceEnough(false);
-        return false;
-      } else {
-        setAllowanceEnough(true);
+        return BetValidStatus.ALLOWANCE_NOT_ENOUGH;
       }
 
-      return true;
+      return BetValidStatus.VALID;
     }, [payout, maxPayout, ubiBalance, allowance, betAmountBN, minBet]);
 
     const bet = async () => {
@@ -106,21 +105,13 @@ const Game = () => {
               <Text mt={5}>Payout: {formatBN(payout, 3)} UBI</Text>
               <Text mt={2}>Max payout: {formatBN(maxPayout, 4)} UBI</Text>
 
-              {canCreateBet && allowanceEnough &&
-                (<Button mt={5} size="lg" onClick={bet}>
-                  Place Bet
-                </Button>)
-              }    
-              {!canCreateBet && allowanceEnough &&
-                (<Button mt={5} size="lg" disabled>
-                  {validationMsg}
-                </Button>)
-              }          
-              {!allowanceEnough &&
-                (<Button mt={5} size="lg" onClick={onApprove}>
-                  Approve
-                </Button>)
-              }
+              <Center mt={5}>
+                <ButtonBet 
+                  validationStatus={validStatus}
+                  onApprove={onApprove}
+                  onBet={bet}
+                  onConnect={loadWeb3Modal}/>
+              </Center>
               {ubiBalance.lte(0) &&
                 (<Center>
                   <ButtonUBI />
