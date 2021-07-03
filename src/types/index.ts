@@ -20,3 +20,14 @@ export interface ETHEREUM_CHAIN {
   blockExplorerUrls?: string[];
   iconUrls?: string[]; // Currently ignored.
 }
+
+export interface Bet { 
+  id: string,
+  player: string,
+  chance: string,
+  amount: string,
+  result: string,
+  win: boolean
+  requestId: string,
+  timestamp: string,
+}

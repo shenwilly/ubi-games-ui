@@ -10,6 +10,7 @@ const Context = createContext<ContextValues>({
   allowance: BigNumber.from(0),
   isApproving: false,
   isApproved: false,
+  bets: undefined,
   onApprove: () => {},
   createBet: async () => undefined
 });
