@@ -1,5 +1,5 @@
 import { BigNumber, ContractTransaction, ethers, providers, Signer } from "ethers";
-import { NETWORK_CONFIGS } from "../constants/networks";
+import { CHAIN_METADATA } from "../constants/networks";
 import { ERC20 } from "../types/eth";
 import ERC20abi from "../constants/abis/ERC20.json";
 
@@ -54,6 +54,6 @@ export const approve = async (
 };
   
 export const getNativeCurrency = (chainId: number) => {
-  const network = NETWORK_CONFIGS[chainId];
-  return network?.nativeCurrency ?? "";
+  const network = CHAIN_METADATA[chainId];
+  return network.nativeCurrency.symbol;
 }

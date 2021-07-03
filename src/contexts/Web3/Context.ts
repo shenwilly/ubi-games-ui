@@ -7,6 +7,7 @@ const Context = createContext<ContextValues>({
     web3Modal: undefined,
     injectedProvider: undefined,
     chainId: undefined,
+    changeNetwork: (_) => {},
     loadWeb3Modal: () => {},
     logoutOfWeb3Modal: () => {}
 });

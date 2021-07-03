@@ -3,6 +3,7 @@ import Context from "./Context";
 import { Web3Provider } from "@ethersproject/providers";
 import { web3Modal } from "../../utils/web3modal";
 import { Signer } from "ethers";
+import { CHAIN_METADATA, NETWORKS } from "../../constants";
 
 const Provider: React.FC = ({ children }) => {
     const [web3Account, setWeb3Account] = useState<Signer>();
@@ -30,6 +31,32 @@ const Provider: React.FC = ({ children }) => {
         setTimeout(() => {
             window.location.reload();
         }, 1);
+    };
+
+    const changeNetwork = async (network: NETWORKS) => {
+        if (!injectedProvider) return;
+
+        const chainMetadata = CHAIN_METADATA[network];
+
+        try {
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: chainMetadata.chainId }],
+            });
+        } catch (switchError: any) {
+            if (switchError.code === 4902) {
+              try {
+                await window.ethereum.request({
+                  method: 'wallet_addEthereumChain',
+                  params: [chainMetadata],
+                });
+              } catch (addError) {
+                console.log(addError)
+              }
+            }
+        }  
+        
+        window.location.reload();
     };
 
     useEffect(() => {
@@ -64,6 +91,7 @@ const Provider: React.FC = ({ children }) => {
                 injectedProvider,
                 web3Modal,
                 chainId,
+                changeNetwork,
                 loadWeb3Modal,
                 logoutOfWeb3Modal,
             }}>

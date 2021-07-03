@@ -9,8 +9,13 @@ import chakraTheme from "./utils/chakraTheme"
 import Game from "./pages/Game"
 import { Web3Provider } from "./contexts/Web3"
 import { UbirollProvider } from "./contexts/Ubiroll"
+import NetworkModal from "./components/NetworkModal"
+import useWeb3 from "./hooks/useWeb3"
+import { NETWORKS } from "./constants"
 
 function App() {
+  const { chainId } = useWeb3();
+
   return (
     <Router>
       <SiteWrapper>
@@ -22,6 +27,7 @@ function App() {
             </Route>
           </Switch>
         </BodyWrapper>
+        <NetworkModal isOpen={chainId !== undefined && chainId !== NETWORKS.MATIC} />
       </SiteWrapper>
     </Router>
   );
