@@ -32,7 +32,7 @@ const UbiModal: React.FC<UbiModalProps> = ({ isOpen, onClose }) => {
                     </Button>
 
                     <Button isFullWidth onClick={() => openNewTab(MATIC_BRIDGE_URL)}>
-                      Bridge from Ethereum
+                      Transfer from Ethereum
                     </Button>
                 </VStack>
               </ModalBody>
