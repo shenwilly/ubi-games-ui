@@ -83,6 +83,28 @@ const Provider: React.FC = ({ children }) => {
       return () => clearInterval(refreshInterval);
     }, [injectedProvider, chainId, fetchMinBet])
 
+    const fetchBets = useCallback(async () => {
+      if (!ubirollGqlQuery || !accountAddress) return;
+
+      const response = await ubirollGqlQuery(QUERY, {
+        player: accountAddress
+      });
+      const bets: Bet[] = response.data.bets;
+      setBets(bets);
+      setPendingBets(oldPendingBets => {
+        const newPendingBets = oldPendingBets.filter((pendingBet) => {
+          return bets.findIndex((bet) => bet.id === pendingBet.id) < 0;
+        })
+        return newPendingBets;
+      })
+    }, [setBets, setPendingBets, ubirollGqlQuery, accountAddress])
+
+    useEffect(() => {
+      fetchBets();
+      let refreshInterval = setInterval(fetchBets, 15000);
+      return () => clearInterval(refreshInterval);
+    }, [fetchBets])
+
     const createBet = useCallback(
       async (amount: BigNumber, chance: number) => {
         if (!amount || !chance || !injectedProvider || !web3Account) {
@@ -126,32 +148,12 @@ const Provider: React.FC = ({ children }) => {
           }
           return newBets;
         })
+        fetchBets();
 
         return receipt.status === 1;
       },
       [web3Account, injectedProvider, accountAddress]
     );
-
-    useEffect(() => {
-      if (!ubirollGqlQuery || !accountAddress) return;
-
-      const fetchBets = async () => {
-        const response = await ubirollGqlQuery(QUERY, {
-          player: accountAddress
-        });
-        const bets: Bet[] = response.data.bets;
-        setBets(bets);
-        setPendingBets(oldPendingBets => {
-          const newPendingBets = oldPendingBets.filter((pendingBet) => {
-            return bets.findIndex((bet) => bet.id === pendingBet.id) < 0;
-          })
-          return newPendingBets;
-        })
-      }
-      fetchBets();
-      let refreshInterval = setInterval(fetchBets, 10000);
-      return () => clearInterval(refreshInterval);
-    }, [ubirollGqlQuery, accountAddress])
       
     return (
         <Context.Provider
