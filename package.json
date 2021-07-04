@@ -16,6 +16,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.10",
     "@walletconnect/web3-provider": "^1.4.1",
+    "date-fns": "^2.22.1",
     "ethers": "^5.4.0",
     "framer-motion": "^4",
     "react": "^17.0.2",
