@@ -1,5 +1,4 @@
 import { constants, BigNumber } from "ethers";
-import { Web3Provider } from "@ethersproject/providers";
 import { useCallback, useState, useEffect } from "react";
 import { approve, getAllowance } from "../utils/web3";
 import useWeb3 from "./useWeb3";

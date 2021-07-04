@@ -20,7 +20,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ height }) => {
             {bets && bets.length > 0 &&
               bets.sort((a, b) => parseInt(b.timestamp) - parseInt(a.timestamp))
                 .map((bet, index) => <BetHistoryRecord key={index} bet={bet} />)}
-            {bets && bets.length == 0 &&
+            {bets && bets.length === 0 &&
               <Text>No bets yet</Text>}
             {!bets && <Text>Loading</Text>}
           </VStack>

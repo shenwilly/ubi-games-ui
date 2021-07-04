@@ -2,7 +2,6 @@ import React, { useCallback, useState, useEffect } from "react";
 import Context from "./Context";
 import useWeb3 from "../../hooks/useWeb3";
 import useApproval from "../../hooks/useApproval";
-import { Web3Provider } from "@ethersproject/providers";
 import { getUBIAddress } from "../../utils/ubi";
 import { BigNumber, ethers } from "ethers";
 import { getERC20Balance } from "../../utils/web3";
@@ -152,7 +151,7 @@ const Provider: React.FC = ({ children }) => {
 
         return receipt.status === 1;
       },
-      [web3Account, injectedProvider, accountAddress]
+      [web3Account, injectedProvider, accountAddress, fetchBets, toast]
     );
       
     return (

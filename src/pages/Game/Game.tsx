@@ -1,4 +1,4 @@
-import { Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center, Spacer } from "@chakra-ui/react"
+import { Text, Flex, Input, Slider, SliderFilledTrack, SliderThumb, SliderTrack, SimpleGrid, Box, GridItem, Grid, Center } from "@chakra-ui/react"
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { useMemo, useState } from "react";
