@@ -52,6 +52,7 @@ const FooterWrapper = styled.div`
   position: absolute;
   left: 0;
   bottom: 8px;
+  width: 100%;
 `;
 
 const Providers: React.FC = ({ children }) => {

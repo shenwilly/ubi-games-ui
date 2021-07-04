@@ -1,25 +1,20 @@
-import { Container, Flex, Button, Image } from "@chakra-ui/react"
-import GithubLogo from "../../assets/github.png";
-import PolygonLogo from "../../assets/polygon.png";
-import { UBIGAMES_GITHUB_URL, UBIROLL_POLYGONSCAN_URL } from "../../constants";
-import { openNewTab } from "../../utils/helpers";
+import { Container, Flex, Button, useDisclosure } from "@chakra-ui/react"
+import { BsQuestionCircle } from  "react-icons/bs";
+import AboutModal from "../AboutModal";
 
 const Footer = () => {
-
+    const { isOpen, onClose, onOpen } = useDisclosure();
+    
     return (
         <Container maxW="container.xl">
-          <Flex align="center" pr="1">
-            <Button onClick={() => openNewTab(UBIROLL_POLYGONSCAN_URL)} 
+          <Flex align="center">
+            <Button onClick={onOpen} 
                 p="2" size="md" variant="ghost"
             >
-                <Image src={PolygonLogo} fit="contain" width="24px" />
-            </Button>
-            <Button onClick={() => openNewTab(UBIGAMES_GITHUB_URL)} 
-                p="2" size="md" variant="ghost"
-            >
-                <Image src={GithubLogo} fit="contain" width="24px" />
+                <BsQuestionCircle size="30px" />
             </Button>
           </Flex>
+          <AboutModal isOpen={isOpen} onClose={onClose}/>
         </Container>
     );
 };
