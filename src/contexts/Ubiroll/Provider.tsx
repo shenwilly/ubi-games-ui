@@ -140,8 +140,10 @@ const QUERY = `
       player
       chance
       amount
-      win
       result
+      prize
+      win
+      finished
       timestamp
     }
   }
