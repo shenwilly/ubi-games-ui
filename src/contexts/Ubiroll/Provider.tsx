@@ -15,6 +15,7 @@ import useFetch, { CachePolicies } from 'use-http'
 import { UBIROLL_GRAPH_ENDPOINT } from "../../constants";
 import { Bet } from "../../types";
 import { getUnixTime } from 'date-fns'
+import { useToast } from "@chakra-ui/react";
 
 const Provider: React.FC = ({ children }) => {
     const { accountAddress, chainId, web3Account, injectedProvider } = useWeb3();
@@ -26,6 +27,7 @@ const Provider: React.FC = ({ children }) => {
     const [ pendingBets, setPendingBets ] = useState<Bet[]>([]);
     const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, VAULT_ADDRESS);
     const { query:ubirollGqlQuery } = useFetch(UBIROLL_GRAPH_ENDPOINT, {cachePolicy: CachePolicies.NO_CACHE});
+    const toast = useToast();
 
     const fetchUBIBalance = useCallback(async () => {
       if (accountAddress && ubiAddress && injectedProvider) {
@@ -86,9 +88,16 @@ const Provider: React.FC = ({ children }) => {
         if (!amount || !chance || !injectedProvider || !web3Account) {
           return;
         }
-        
+
         const ubiroll = (new ethers.Contract(UBIROLL_ADDRESS, UbirollAbi, injectedProvider)) as Ubiroll;
         const tx = await ubiroll.connect(web3Account).createBet(chance, amount);
+
+        toast({
+          description: "Transaction sent!",
+          status: "info",
+          duration: 5000,
+          isClosable: true,
+        })
 
         const now = getUnixTime(new Date()).toString();
         const tempId = `temp-${now}`;
