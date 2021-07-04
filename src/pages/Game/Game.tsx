@@ -63,7 +63,7 @@ const Game = () => {
     }, [payout, maxPayout, ubiBalance, allowance, betAmountBN, minBet, injectedProvider]);
 
     const bet = async () => {
-      await createBet(parseUnits(betAmount, 18), betChance);
+      await createBet(parseUnits(betAmount, 18), betChance, payout);
     }
 
     return (

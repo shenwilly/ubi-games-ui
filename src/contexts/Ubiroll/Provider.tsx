@@ -92,7 +92,7 @@ const Provider: React.FC = ({ children }) => {
       setBets(bets);
       setPendingBets(oldPendingBets => {
         const newPendingBets = oldPendingBets.filter((pendingBet) => {
-          return bets.findIndex((bet) => bet.id === pendingBet.id) < 0;
+          return bets.findIndex((bet) => bet.txHash === pendingBet.txHash) < 0;
         })
         return newPendingBets;
       })
@@ -100,12 +100,12 @@ const Provider: React.FC = ({ children }) => {
 
     useEffect(() => {
       fetchBets();
-      let refreshInterval = setInterval(fetchBets, 15000);
+      let refreshInterval = setInterval(fetchBets, 10000);
       return () => clearInterval(refreshInterval);
     }, [fetchBets])
 
     const createBet = useCallback(
-      async (amount: BigNumber, chance: number) => {
+      async (amount: BigNumber, chance: number, payout?: BigNumber) => {
         if (!amount || !chance || !injectedProvider || !web3Account) {
           return;
         }
@@ -120,38 +120,22 @@ const Provider: React.FC = ({ children }) => {
           isClosable: true,
         })
 
-        const now = getUnixTime(new Date()).toString();
-        const tempId = `temp-${now}`;
         const newBet: Bet = {
-          id: tempId,
+          id: "",
           amount: amount.toString(),
           chance: chance.toString(),
           finished: false,
           player: accountAddress,
-          prize: "1",
-          timestamp: now,
-          txHash: "",
+          prize: payout ? payout.toString() : "0",
+          timestamp: getUnixTime(new Date()).toString(),
+          txHash: tx.hash,
         }
         setPendingBets(oldBets => [...oldBets, newBet]);
 
         const receipt = await tx.wait();
-        const betEvent = receipt.events!.filter(
-          (event) => event.event === "BetCreated"
-        )[0];
-        const id: BigNumber = betEvent.args![0];
-        setPendingBets(oldBets => {
-          const newBets = [...oldBets];
-          const betIndex = oldBets?.findIndex((bet) => bet.id === tempId);
-          if (betIndex >= 0) {
-            newBets[betIndex].id = id.toString();
-          }
-          return newBets;
-        })
-        fetchBets();
-
         return receipt.status === 1;
       },
-      [web3Account, injectedProvider, accountAddress, fetchBets, toast]
+      [web3Account, injectedProvider, accountAddress, toast]
     );
       
     return (

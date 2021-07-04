@@ -12,5 +12,5 @@ export interface ContextValues {
     bets: Bet[] | undefined,
     pendingBets: Bet[],
     onApprove: () => void,
-    createBet: (amount: BigNumber, chance: number) => Promise<boolean | undefined>,
+    createBet: (amount: BigNumber, chance: number, payout?: BigNumber) => Promise<boolean | undefined>,
 }
