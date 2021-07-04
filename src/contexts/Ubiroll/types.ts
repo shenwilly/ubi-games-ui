@@ -10,6 +10,7 @@ export interface ContextValues {
     isApproving: boolean,
     isApproved: boolean,
     bets: Bet[] | undefined,
+    pendingBets: Bet[],
     onApprove: () => void,
     createBet: (amount: BigNumber, chance: number) => Promise<boolean | undefined>,
 }

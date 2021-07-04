@@ -27,10 +27,10 @@ export interface Bet {
   chance: string,
   amount: string,
   prize: string,
-  result: string,
-  win: boolean
+  result?: string,
+  win?: boolean
   finished: boolean,
-  requestId: string,
+  requestId?: string,
   timestamp: string,
   txHash: string,
 }

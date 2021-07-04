@@ -11,6 +11,7 @@ const Context = createContext<ContextValues>({
   isApproving: false,
   isApproved: false,
   bets: undefined,
+  pendingBets: [],
   onApprove: () => {},
   createBet: async () => undefined
 });

@@ -14,6 +14,7 @@ import { NETWORKS } from "../../constants/networks";
 import useFetch, { CachePolicies } from 'use-http'
 import { UBIROLL_GRAPH_ENDPOINT } from "../../constants";
 import { Bet } from "../../types";
+import { getUnixTime } from 'date-fns'
 
 const Provider: React.FC = ({ children }) => {
     const { accountAddress, chainId, web3Account, injectedProvider } = useWeb3();
@@ -22,6 +23,7 @@ const Provider: React.FC = ({ children }) => {
     const [ minBet, setMinBet ] = useState<BigNumber>(BigNumber.from(0));
     const [ houseUbiBalance, setHouseUbiBalance ] = useState<BigNumber>(BigNumber.from(0));
     const [ bets, setBets ] = useState<Bet[]>();
+    const [ pendingBets, setPendingBets ] = useState<Bet[]>([]);
     const { allowance, isApproving, isApproved, onApprove } = useApproval(ubiAddress, VAULT_ADDRESS);
     const { query:ubirollGqlQuery } = useFetch(UBIROLL_GRAPH_ENDPOINT, {cachePolicy: CachePolicies.NO_CACHE});
 
@@ -86,11 +88,39 @@ const Provider: React.FC = ({ children }) => {
         }
         
         const ubiroll = (new ethers.Contract(UBIROLL_ADDRESS, UbirollAbi, injectedProvider)) as Ubiroll;
-        const tx =  await ubiroll.connect(web3Account).createBet(chance, amount);
+        const tx = await ubiroll.connect(web3Account).createBet(chance, amount);
+
+        const now = getUnixTime(new Date()).toString();
+        const tempId = `temp-${now}`;
+        const newBet: Bet = {
+          id: tempId,
+          amount: amount.toString(),
+          chance: chance.toString(),
+          finished: false,
+          player: accountAddress,
+          prize: "1",
+          timestamp: now,
+          txHash: "",
+        }
+        setPendingBets(oldBets => [...oldBets, newBet]);
+
         const receipt = await tx.wait();
+        const betEvent = receipt.events!.filter(
+          (event) => event.event === "BetCreated"
+        )[0];
+        const id: BigNumber = betEvent.args![0];
+        setPendingBets(oldBets => {
+          const newBets = [...oldBets];
+          const betIndex = oldBets?.findIndex((bet) => bet.id === tempId);
+          if (betIndex >= 0) {
+            newBets[betIndex].id = id.toString();
+          }
+          return newBets;
+        })
+
         return receipt.status === 1;
       },
-      [web3Account, injectedProvider]
+      [web3Account, injectedProvider, accountAddress]
     );
 
     useEffect(() => {
@@ -102,6 +132,12 @@ const Provider: React.FC = ({ children }) => {
         });
         const bets: Bet[] = response.data.bets;
         setBets(bets);
+        setPendingBets(oldPendingBets => {
+          const newPendingBets = oldPendingBets.filter((pendingBet) => {
+            return bets.findIndex((bet) => bet.id === pendingBet.id) < 0;
+          })
+          return newPendingBets;
+        })
       }
       fetchBets();
       let refreshInterval = setInterval(fetchBets, 10000);
@@ -119,6 +155,7 @@ const Provider: React.FC = ({ children }) => {
               isApproving,
               isApproved,
               bets,
+              pendingBets,
               onApprove,
               createBet,
             }}>
