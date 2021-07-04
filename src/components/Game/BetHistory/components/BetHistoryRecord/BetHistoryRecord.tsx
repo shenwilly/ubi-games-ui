@@ -5,6 +5,7 @@ import { formatBN } from "../../../../../utils/bigNumber";
 import { format, fromUnixTime } from 'date-fns'
 import { useMemo } from "react";
 import { POLYGONSCAN_URL } from "../../../../../constants";
+import { openNewTab } from "../../../../../utils/helpers";
 
 interface BetHistoryRecordProps {
   bet: Bet
@@ -19,7 +20,7 @@ const BetHistoryRecord: React.FC<BetHistoryRecordProps> = ({ bet }) => {
 
   const handleClick = () => {
     const url = POLYGONSCAN_URL + `tx/${txHash}`;
-    window.open(url, '_blank', 'noopener,noreferrer')
+    openNewTab(url);
   }
 
   return (

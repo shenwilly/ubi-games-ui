@@ -12,6 +12,7 @@ import { UbirollProvider } from "./contexts/Ubiroll"
 import NetworkModal from "./components/NetworkModal"
 import useWeb3 from "./hooks/useWeb3"
 import { NETWORKS } from "./constants"
+import Footer from "./components/Footer"
 
 function App() {
   const { chainId } = useWeb3();
@@ -27,6 +28,9 @@ function App() {
             </Route>
           </Switch>
         </BodyWrapper>
+        <FooterWrapper>
+          <Footer />
+        </FooterWrapper>
         <NetworkModal isOpen={chainId !== undefined && chainId !== NETWORKS.MATIC} />
       </SiteWrapper>
     </Router>
@@ -38,15 +42,16 @@ const SiteWrapper = styled.div`
   height: 100vh;
   overflow-y: scroll;
   z-index: 1;
-  // background-color: #fff;
-  // background-image:
-  //   radial-gradient(at top left, rgb(242,237,220), transparent),
-  //   radial-gradient(at top right, rgb(242,227,200), transparent),
-  //   radial-gradient(at bottom left, rgb(242,227,200), transparent);
 `;
 
 const BodyWrapper = styled(Container)`
   height: ${props => `calc(100vh - ${props.theme.headerHeight})`}
+`;
+
+const FooterWrapper = styled.div`
+  position: absolute;
+  left: 0;
+  bottom: 8px;
 `;
 
 const Providers: React.FC = ({ children }) => {

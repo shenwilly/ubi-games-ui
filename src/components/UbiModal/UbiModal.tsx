@@ -5,6 +5,7 @@ import {
 import { MATIC_BRIDGE_URL, UBI_QUICKSWAP_URL } from "../../constants/urls";
 import useUbiroll from "../../hooks/useUbiroll";
 import { formatBN } from "../../utils/bigNumber";
+import { openNewTab } from "../../utils/helpers";
 
 interface UbiModalProps {
   isOpen: boolean;
@@ -14,10 +15,6 @@ interface UbiModalProps {
 const UbiModal: React.FC<UbiModalProps> = ({ isOpen, onClose }) => {
   const { ubiBalance } = useUbiroll();
   
-  const openNewTab = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   return (
       <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
