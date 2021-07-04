@@ -119,12 +119,7 @@ const Game = () => {
               }
           </Flex>
           <Box mt={[8, 0]}>
-            <Flex mb={5}>
-              <Text>Total Burned: 100 UBI</Text>
-              <Spacer />
-              <Text>Total Won: 100 UBI</Text>
-            </Flex>
-            <BetHistory height={["", "90%"]}/>
+            <BetHistory height={["", "80vh"]}/>
           </Box>
         </SimpleGrid>
       </PageLayout>

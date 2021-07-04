@@ -32,4 +32,5 @@ export interface Bet {
   finished: boolean,
   requestId: string,
   timestamp: string,
+  txHash: string,
 }

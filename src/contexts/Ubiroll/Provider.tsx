@@ -145,6 +145,7 @@ const QUERY = `
       win
       finished
       timestamp
+      txHash
     }
   }
 `;
