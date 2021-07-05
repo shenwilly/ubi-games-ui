@@ -4,7 +4,8 @@ import {
 } from "@chakra-ui/react"
 import GithubLogo from "../../assets/github.png";
 import PolygonLogo from "../../assets/polygon.png";
-import { UBIGAMES_GITHUB_URL, UBIROLL_POLYGONSCAN_URL } from "../../constants";
+import { UBIGAMES_GITHUB_URL, POLYGONSCAN_URL } from "../../constants";
+import { UBIROLL_ADDRESS } from "../../constants/address";
 import { openNewTab } from "../../utils/helpers";
 
 interface NetworkModalProps {
@@ -30,7 +31,7 @@ const AboutModal: React.FC<NetworkModalProps> = ({ isOpen, onClose }) => {
                   · Results are fairly generated via Chainlink VRF
                 </Text>
                 <HStack spacing={3} alignItems="center" justify="center" mt={5}>
-                  <Button onClick={() => openNewTab(UBIROLL_POLYGONSCAN_URL)} 
+                  <Button onClick={() => openNewTab(POLYGONSCAN_URL+`address/${UBIROLL_ADDRESS}`)} 
                       p="2" size="md" variant="ghost"
                   >
                       <Image src={PolygonLogo} fit="contain" width="24px" />
