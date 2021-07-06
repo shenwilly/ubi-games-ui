@@ -12,7 +12,7 @@ interface BetHistoryRecordProps {
 }
 
 const BetHistoryRecord: React.FC<BetHistoryRecordProps> = ({ bet }) => {
-  const { amount, chance, prize, timestamp, finished, win, txHash } = bet;
+  const { amount, chance, prize, timestamp, finished, win, txHash, result } = bet;
   const betAmount = useMemo(() => formatBN(BigNumber.from(amount)), [amount]);
   const prizeAmount = useMemo(() => formatBN(BigNumber.from(prize), 4), [prize]);
   const date = useMemo(() => fromUnixTime(parseInt(timestamp)), [timestamp]);
@@ -29,17 +29,21 @@ const BetHistoryRecord: React.FC<BetHistoryRecordProps> = ({ bet }) => {
       <Flex>
         <Text>Bet: {betAmount} UBI</Text>
         <Spacer/>
-        <Text fontWeight="bold">
-          {finished 
-            ? win
-              ? 'WIN'
-              : 'LOSE'
-            : 'PENDING'
-          }
+        {finished &&
+          <Text mr={2}>Result: {result}</Text>}
+        <Text>
+          <Text fontWeight="bold">
+            {finished 
+              ? win
+                ? 'WIN'
+                : 'LOSE'
+              : 'PENDING'
+            }
+          </Text>
         </Text>
       </Flex>
       <Flex>
-        <Text>Chance: {chance}%</Text>
+        <Text>Roll under: {parseInt(chance)+1} ({chance}% win chance)</Text>
       </Flex>
       <Flex alignItems="flex-end">
         <Text>Payout: {prizeAmount} UBI</Text>
